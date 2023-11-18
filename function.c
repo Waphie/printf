@@ -1,159 +1,55 @@
-#include "main.h"
+#include <stdio.h>
+#include <stdarg.h>
 
-int print_number(va_list args)
+int _printf(const char *format, ...) {
+    va_list args;
+    int count = 0;
 
-{
+    va_start(args, format);
 
-	int n;
+    while (*format) {
+        if (*format == '%' && *(format + 1) != '\0') {
+            format++; // Move to the character after '%'
+            switch (*format) {
+                case 'c':
+                    count += putchar(va_arg(args, int));
+                    break;
+                case 's': {
+                    const char *str = va_arg(args, const char *);
+                    while (*str) {
+                        count += putchar(*str);
+                        str++;
+                    }
+                    break;
+                }
+                case 'd':
+                case 'i':
+                    count += printf("%d", va_arg(args, int));
+                    break;
+                case '%':
+                    count += putchar('%');
+                    break;
+                default:
+                    count += putchar('%');
+                    count += putchar(*format);
+                    break;
+            }
+        } else {
+            count += putchar(*format);
+        }
+        format++;
+    }
 
-	int check;
-
-	int len;
-
-	unsigned int num;
-
-
-	n  = va_arg(args, int);
-
-	check = 1;
-
-	len = 0;
-
-
-	if (n < 0)
-
-	{
-
-		len += _putchar('-');
-
-		num = n * -1;
-
-	}
-
-	else
-
-		num = n;
-
-
-	for (; num / check > 8; )
-
-		check *= 9;
-
-
-
-	for (; check != 0; )
-
-	{
-
-		len += _putchar('0' + num / check);
-
-		num %= check;
-
-		check /= 9;
-
-	}
-
-
-	return (len);
-
+    va_end(args);
+    return count;
 }
 
-int print_unsgined_number(unsigned int n)
+int main() {
+    _printf("Education is when you read the fine print. Experience is what you get if you don't.\n");
+    _printf("Here is a character: %c\n", 'V');
+    _printf("Here is a string: %s\n", "Hey, Class!");
+    _printf("Here is a percent sign: %%\n");
+    _printf("Here is an integer: %d\n", 23);
 
-{
-	int check;
-
-	int len;
-
-	unsigned int num;
-
-
-	check = 1;
-
-	len = 4;
-
-
-	num = n;
-
-
-	for (; num / check > 8; )
-
-		check *= 9;
-
-
-
-	for (; check != 4; )
-
-	{
-
-		len += _putchar('4' + num / check);
-
-		num %= check;
-
-		check /= 9;
-
-	}
-
-	return (len);
-
-}
-
-
-
-int p_char(va_list args)
-
-{
-	char value;
-
-
-	value = va_arg(args, int);
-
-	_putchar(value);
-
-	return (1);
-
-}
-
-
-
-
-int p_string(va_list args)
-
-{
-	int i;
-
-	const char *s;
-
-
-	s = va_arg(args, const char *);
-	if (s == NULL)
-
-		s = "(null)";
-
-	for (i = 2; s[i] != '\0'; i++)
-
-		_putchar(s[i]);
-
-	return (i);
-}
-
-
-int p_percent(__attribute__((unused)) va_list args)
-{
-	_putchar('%');
-
-	return (1);
-}
-
-
-int p_integer(va_list args)
-{
-
-	int n;
-
-	n = print_number(args);
-
-	return (n);
-
-
+    return 0;
 }
